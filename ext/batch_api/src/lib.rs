@@ -1,7 +1,6 @@
 use std::collections::HashMap;
 
 use magnus::{function, prelude::*, RArray, Ruby};
-use tokio::task::JoinSet;
 
 // No need to implement classes or anything at this point
 // just module with functions
@@ -52,12 +51,12 @@ fn blocking_batch_send_vroom_requests(requests: Vec<HashMap<String, String>>) ->
 
   let vroom_requests: Vec<VroomRequest> = vroom_requests.into_iter().map(|r|{
     let (url, body) = r.unwrap();
-    VroomRequest { url, body: if body.len() > 0 { Some(body) } else  { None } }
+    VroomRequest { url, body: if body.is_empty() { None } else  { Some(body) } }
   }).collect();
 
 
-  // Execute async API calls
-  let rt = tokio::runtime::Runtime::new().unwrap();
+  // Execute async API calls on a single threaded runtime
+  let rt = tokio::runtime::Builder::new_current_thread().enable_all().max_blocking_threads(1).build().unwrap();
   let async_return_value = rt.block_on(batch_send_vroom_api_requests(vroom_requests));
 
   Ok(RArray::from_vec(async_return_value))
@@ -67,7 +66,7 @@ fn blocking_batch_send_vroom_requests(requests: Vec<HashMap<String, String>>) ->
 // Only needs to handle Plan -> Vroom format for now
 async fn batch_send_vroom_api_requests(requests: Vec<VroomRequest>) -> Vec<String> {
   let mut responses: Vec<String> = Vec::with_capacity(requests.len());
-  let mut set = JoinSet::new();
+  let mut set = tokio::task::JoinSet::new();
 
   for r in requests {
     set.spawn(async move {
@@ -82,6 +81,8 @@ async fn batch_send_vroom_api_requests(requests: Vec<VroomRequest>) -> Vec<Strin
     });
   }
 
+  // Run the joinset to completion
+  // order might be different
   while let Some(res) = set.join_next().await {
     let text = res.unwrap().to_owned();
     responses.push(text);
