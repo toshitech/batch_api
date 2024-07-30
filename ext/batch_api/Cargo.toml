@@ -1,0 +1,15 @@
+[package]
+name = "batch_api"
+version = "0.1.0"
+edition = "2021"
+authors = ["Sam Sargent <samsarge@hotmail.co.uk>"]
+license = "MIT"
+publish = false
+
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+magnus = { version = "0.6.2" }
+reqwest = { version = "0.12", features = ["json"] }
+tokio = { version = "1.39.2", features = ["full"] }
