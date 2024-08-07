@@ -7,9 +7,18 @@ use magnus::{function, prelude::*, RArray, Ruby};
 // note this https://github.com/matsadler/magnus?tab=readme-ov-file#safety
 
 // Pretty sure Vroom is just POSTs requests
+#[derive(Debug)]
 struct VroomRequest {
   url: String,
   body: Option<String>
+}
+
+// Sort id is to optionally sort responses
+// in the same order they were sent
+#[derive(Debug)]
+struct ApiResponse {
+  sort_key: i32,
+  body: String
 }
 
 /// Wrap for some error handling
@@ -30,7 +39,6 @@ impl VroomRequestArgument {
 
 /// Wrap batch_send_vroom_api_requests() function
 fn blocking_batch_send_vroom_requests(requests: Vec<HashMap<String, String>>) -> Result<RArray, magnus::Error> {
-
   let vroom_requests: Vec<Result<(String, String), String>> = requests.into_iter().map(|rhash| {
     let arg = VroomRequestArgument(rhash);
 
@@ -65,10 +73,10 @@ fn blocking_batch_send_vroom_requests(requests: Vec<HashMap<String, String>>) ->
 /// Execute API calls asynchronously with tokio
 // Only needs to handle Plan -> Vroom format for now
 async fn batch_send_vroom_api_requests(requests: Vec<VroomRequest>) -> Vec<String> {
-  let mut responses: Vec<String> = Vec::with_capacity(requests.len());
+  let mut responses: Vec<ApiResponse> = Vec::with_capacity(requests.len());
   let mut set = tokio::task::JoinSet::new();
 
-  for r in requests {
+  for (sort_key, r) in requests.into_iter().enumerate() {
     set.spawn(async move {
         let mut client = reqwest::Client::new().get(r.url);
         // Add support for different methods
@@ -77,18 +85,23 @@ async fn batch_send_vroom_api_requests(requests: Vec<VroomRequest>) -> Vec<Strin
         }
 
         let res = client.send().await.unwrap();
-        res.text().await.unwrap()
+
+        ApiResponse { sort_key: sort_key as i32, body: res.text().await.unwrap() }
     });
   }
 
-  // Run the joinset to completion
-  // order might be different
+  // Run the joinset to completion, they return in the order they finish
+  // so need to sort them again after
   while let Some(res) = set.join_next().await {
-    let text = res.unwrap().to_owned();
-    responses.push(text);
+    let api_response = res.unwrap();
+    responses.push(api_response);
   }
 
-  responses
+  // order results in the same order they came in
+  responses.sort_by_key(|r| r.sort_key);
+
+  // respond just with the response bodies for now
+  responses.into_iter().map(|r| r.body ).collect()
 }
 
 #[magnus::init]
