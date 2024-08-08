@@ -78,7 +78,7 @@ async fn batch_send_vroom_api_requests(requests: Vec<VroomRequest>) -> Vec<Strin
 
   for (sort_key, r) in requests.into_iter().enumerate() {
     set.spawn(async move {
-        let mut client = reqwest::Client::new().get(r.url);
+        let mut client = reqwest::Client::new().post(r.url);
         // Add support for different methods
         if let Some(body) = r.body {
           client = client.body(body);
