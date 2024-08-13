@@ -1,4 +1,5 @@
 use std::collections::HashMap;
+use std::sync::Arc;
 
 use super::request::Request;
 use super::response::Response;
@@ -33,10 +34,10 @@ async fn batch_send_vroom_api_requests(requests: Vec<Request>) -> Vec<Response> 
   let mut responses: Vec<Response> = Vec::with_capacity(requests.len());
   let mut set = tokio::task::JoinSet::new();
 
-  let client = reqwest::Client::new();
+  let client: Arc<reqwest::Client> = Arc::new(reqwest::Client::new());
 
   for (sort_key, r) in requests.into_iter().enumerate() {
-    let client = client.clone();
+    let client: Arc<reqwest::Client> = Arc::clone(&client);
 
     set.spawn(async move {
       let reqwest_response = client.post(r.url)
