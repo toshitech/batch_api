@@ -11,7 +11,7 @@ impl Request {
   pub fn from_hashmap(hashmap: HashMap<String, String>, plan_mode: bool) -> Result<Self, magnus::Error> {
     // Check presence of body key value pair in the hash
     // required to build the vroom request
-    let body = match hashmap.get("body") {
+    let mut body = match hashmap.get("body") {
       Some(json_string) => { json_string.to_string() },
       None => {
         let rb_error = magnus::Error::new(magnus::exception::arg_error(), "expected hashes with url and body key pairs");
