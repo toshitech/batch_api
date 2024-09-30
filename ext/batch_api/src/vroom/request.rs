@@ -8,7 +8,7 @@ pub struct Request {
 }
 
 impl Request {
-  pub fn from_hashmap(hashmap: HashMap<String, String>) -> Result<Self, magnus::Error> {
+  pub fn from_hashmap(hashmap: HashMap<String, String>, plan_mode: bool) -> Result<Self, magnus::Error> {
     // Check presence of body key value pair in the hash
     // required to build the vroom request
     let body = match hashmap.get("body") {
@@ -18,6 +18,11 @@ impl Request {
         return Err(rb_error);
       }
     };
+
+    // Add the 'c': true option to the body if the mode is 'plan'
+    if plan_mode {
+      body = body.trim_end_matches('}').to_string() + ", \"c\": true }";
+    }
 
     // Check presence of the vroom url environment variable
     // required to build the vroom request

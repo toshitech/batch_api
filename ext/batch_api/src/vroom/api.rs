@@ -9,7 +9,7 @@ type RbArrayOfHashes = Vec<HashMap<String, String>>;
 
 /// Sends vroom api requests async using single threaded tokio runtime
 /// Raises ruby exceptions if the arguments are not hashes and if the VROOM_URL env var is not present
-pub fn rb_batch_send_vroom_requests(rb_array_of_hashes: RbArrayOfHashes) -> Result<magnus::RArray, magnus::Error> {
+pub fn rb_batch_send_vroom_requests(rb_array_of_hashes: RbArrayOfHashes, plan_mode: Bool) -> Result<magnus::RArray, magnus::Error> {
   // Take ruby argument, converted to rust types
   // then convert them into vroom requests, which will validate them also
   let mut vroom_requests: Vec<Request> = Vec::new();
