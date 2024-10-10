@@ -25,7 +25,7 @@ require 'batch_api'
 
 request = { 'body' => vroom_request_body_json }
 requests = [request] * 10
-responses = BatchApi.batch_send_api_requests(requests)
+responses = BatchApi::Vroom.batch_send_api_requests(requests)
 # Returns array of hashes containing vroom response details
 # {
 #   'http_status_code': '200',
