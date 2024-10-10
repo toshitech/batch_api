@@ -1,6 +1,12 @@
-# BatchApi
+# BatchApi (old name, now PlanUtils)
 
-For sending some service API calls async
+I'll change the project repo some other time.
+
+Contains the odd routing utility library for TOSHI Plan.
+
+Currently supports:
+- Batched async API calls to Vroom bypassing Ruby's GIL.
+- Zipcode verification / geocoding using KMZ (compressed KML) files.
 
 ## Installing
 - Add gem to your gemfile with
@@ -42,6 +48,26 @@ responses.each do |r|
     failed_responses << r
   end
 end
+```
+
+### Zipcode verification
+
+```ruby
+require 'batch_api'
+
+mem = BatchApi::ZipcodeVerification::MemStore.new
+# Load location based KMZ files. As of right now because the format
+# of data you can find is complete different for each location
+# these are specific files.
+# For our case we want a lot of data loaded into memory here
+# so make mem part of app state and reuse it.
+mem.load_uk_sectors_from_kmz_file('./uk.kmz')
+# mem.load_ny_sectors_from_kmz_file('./ny.kmz')
+# mem.load_la_sectors_from_kmz_file('./la.kmz')
+
+# Query a lat lng to return the postcode sector.
+mem.query_uk(53.9591450, -1.0792350)
+# Returns string 'YO1 8'
 ```
 
 ## Troubleshooting
