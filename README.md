@@ -50,6 +50,15 @@ responses.each do |r|
 end
 ```
 
+### KML Utilities
+
+```ruby
+# Compress KML file to KMZ
+BatchApi::KmlUtilities.compress_kml_to_kmz("input.kml", "output.kmz")
+# Uncompress a KMZ file to KML
+BatchApi::KmlUtilities.uncompress_kmz_to_kml("input.kmz", "output.kml")
+```
+
 ### Zipcode verification
 
 ```ruby
@@ -65,9 +74,17 @@ mem.load_uk_sectors_from_kmz_file('./uk.kmz')
 # mem.load_ny_sectors_from_kmz_file('./ny.kmz')
 # mem.load_la_sectors_from_kmz_file('./la.kmz')
 
-# Query a lat lng to return the postcode sector.
-mem.query_uk(53.9591450, -1.0792350)
+# Query a lat lng in a location to return the postcode sector.
+mem.query("uk", 53.9591450, -1.0792350)
 # Returns string 'YO1 8'
+
+# Full countries
+# "uk" united kingdom
+
+# US states
+# "ca" california
+# "ny" new york
+# "nj" new jersey
 ```
 
 ## Troubleshooting

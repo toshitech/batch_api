@@ -14,7 +14,6 @@ impl Response {
     /// consumes self and returns a ruby convertable rust type
     pub fn into_hashmap(self) -> HashMap<String, String> {
         let mut rbarray_convertable_hashmap: HashMap<String, String> = HashMap::with_capacity(1);
-        println!("dog");
         // Insert hash for all fields on Request
         rbarray_convertable_hashmap.insert(String::from("body"), self.body);
         rbarray_convertable_hashmap.insert(

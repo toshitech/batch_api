@@ -7,12 +7,33 @@ RSpec.describe BatchApi do
     expect(BatchApi::VERSION).not_to be nil
   end
 
+
+  describe BatchApi::KmlUtilities do
+    describe 'rust interface' do
+      it 'defines our methods' do
+        expect(BatchApi::KmlUtilities).to respond_to(:uncompress_kmz_to_kml)
+        expect(BatchApi::KmlUtilities).to respond_to(:compress_kml_to_kmz)
+      end
+    end
+  end
+
   describe BatchApi::ZipcodeVerification::MemStore do
+    let(:storage) { BatchApi::ZipcodeVerification::MemStore.new }
     describe '#new' do
-      let(:storage) { BatchApi::ZipcodeVerification::MemStore.new }
       it 'correctly initialises the ruby object of the rust struct' do
         # just dont break
         expect(storage).to be_a BatchApi::ZipcodeVerification::MemStore
+      end
+    end
+
+    describe 'rust interface' do
+      it 'defines our methods' do
+        expect(storage).to respond_to(:query)
+
+        expect(storage).to respond_to(:load_uk_sectors_from_kmz_file)
+        expect(storage).to respond_to(:load_ny_sectors_from_kmz_file)
+        expect(storage).to respond_to(:load_ca_sectors_from_kmz_file)
+        expect(storage).to respond_to(:load_nj_sectors_from_kmz_file)
       end
     end
   end
