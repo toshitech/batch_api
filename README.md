@@ -72,7 +72,8 @@ mem = BatchApi::ZipcodeVerification::MemStore.new
 # so make mem part of app state and reuse it.
 mem.load_uk_sectors_from_kmz_file('./uk.kmz')
 # mem.load_ny_sectors_from_kmz_file('./ny.kmz')
-# mem.load_la_sectors_from_kmz_file('./la.kmz')
+# mem.load_nj_sectors_from_kmz_file('./nj.kmz')
+# mem.load_ca_sectors_from_kmz_file('./ca.kmz')
 
 # Query a lat lng in a location to return the postcode sector.
 mem.query("uk", 53.9591450, -1.0792350)
