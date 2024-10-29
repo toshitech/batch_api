@@ -1,17 +1,12 @@
 #[derive(Debug)]
 pub struct ZipcodeSector {
     name: String,
-    geometry: geo::GeometryCollection,
-    location: Location,
+    geometries: geo::GeometryCollection,
 }
 
 impl ZipcodeSector {
-    pub fn new(name: String, geometry: geo::GeometryCollection, location: Location) -> Self {
-        ZipcodeSector {
-            name,
-            geometry,
-            location,
-        }
+    pub fn new(name: String, geometries: geo::GeometryCollection) -> Self {
+        ZipcodeSector { name, geometries }
     }
 
     pub fn name(&self) -> String {
@@ -19,15 +14,6 @@ impl ZipcodeSector {
     }
 
     pub fn geometry_ref(&self) -> &geo::GeometryCollection {
-        &self.geometry
+        &self.geometries
     }
-}
-
-// Locations we'll have KML / KMZ files for
-// we require everything because we have to match our OSRM bounds
-#[derive(Debug)]
-pub enum Location {
-    Uk,
-    Ny,
-    Ca,
 }
