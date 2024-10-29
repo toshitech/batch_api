@@ -1,6 +1,4 @@
-// parse the KML file for UK which contains a different structure
-// to the US ones.
-// https://www.doogal.co.uk/kml/ZipcodeSectors.kml
+// Our UK files has a different format to our US files
 
 use crate::zipcode_verification::parser::Parse;
 use crate::zipcode_verification::zipcode::ZipcodeSector;
